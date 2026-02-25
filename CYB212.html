@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UYY-CYB 212: Ethical Hacking Cheat Sheet from the DOHS & DOA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"Fira Code"', 'monospace'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        cyber: {
+                            black: '#0a0a0c',
+                            dark: '#111216',
+                            card: '#1a1b23',
+                            green: '#00ff41',
+                            greenDim: 'rgba(0, 255, 65, 0.1)',
+                            border: '#2a2b36'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a0c;
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 255, 65, 0.03), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 255, 65, 0.04), transparent 25%);
+        }
+        
+        /* Custom Scrollbar for terminal vibe */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #2a2b36; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ff41; }
+
+        .glass-card {
+            background: rgba(26, 27, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid #2a2b36;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .glass-card:hover {
+            border-color: rgba(0, 255, 65, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .cmd-block {
+            position: relative;
+        }
+        .copy-btn {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .cmd-block:hover .copy-btn {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col selection:bg-cyber-green selection:text-black">
+
+    <!-- Header & Hero Section -->
+    <header class="border-b border-cyber-border bg-cyber-dark/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                
+                <!-- SVG Image / Logo area -->
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-lg bg-cyber-greenDim border border-cyber-green flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(0,255,65,0.2)]">
+                        <!-- Custom Hacker/Terminal SVG Image -->
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00ff41" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 17L10 11L4 5"></path>
+                            <line x1="12" y1="19" x2="20" y2="19"></line>
+                            <rect x="2" y="3" width="20" height="18" rx="2" ry="2" stroke-width="1" stroke="rgba(0,255,65,0.4)"></rect>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">UYY-CYB 212 <span class="text-cyber-green">Cheat Sheet</span></h1>
+                        <p class="text-sm text-gray-400 font-mono mt-1">Ethical Hacking Fundamental | University of Uyo</p>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="w-full md:w-96 relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-terminal text-cyber-green/50 group-focus-within:text-cyber-green transition-colors"></i>
+                    </div>
+                    <input type="text" id="searchInput" 
+                        class="block w-full pl-10 pr-3 py-3 border border-cyber-border rounded-lg leading-5 bg-cyber-card text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-cyber-green focus:border-cyber-green sm:text-sm transition-all font-mono" 
+                        placeholder="Search commands, flags, or functions...">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div id="noResults" class="hidden text-center py-20">
+            <i class="fas fa-ghost text-6xl text-gray-700 mb-4"></i>
+            <h2 class="text-xl font-bold text-gray-400">No commands found</h2>
+            <p class="text-gray-500 mt-2">Try searching for a different keyword like 'nmap', 'network', or 'find'.</p>
+        </div>
+
+        <!-- Practical Section -->
+        <div id="practicalSection" class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3 pb-2 border-b border-cyber-border">
+                <div class="w-8 h-8 rounded bg-cyber-greenDim flex items-center justify-center border border-cyber-green/50 text-cyber-green">
+                    <i class="fas fa-terminal"></i>
+                </div>
+                Practical Lab Commands
+            </h2>
+            <div id="practicalGrid" class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+                <!-- Content will be injected here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Theory Section -->
+        <div id="theorySection">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3 pb-2 border-b border-cyber-border">
+                <div class="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center border border-blue-500/50 text-blue-400">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                Theoretical Concepts
+            </h2>
+            <div id="theoryGrid" class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+                <!-- Content will be injected here by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-cyber-border bg-cyber-dark py-6 text-center mt-auto">
+        <p class="text-gray-500 text-sm font-mono">
+            <i class="fas fa-shield-halved text-cyber-green mr-2"></i>
+            Stay Ethical. Stay Legal. | Prepared for Exams & Laboratory Testing.
+        </p>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-cyber-green text-black font-bold px-4 py-2 rounded shadow-[0_0_10px_rgba(0,255,65,0.5)] z-50 flex items-center gap-2">
+        <i class="fas fa-check-circle"></i>
+        <span>Command Copied!</span>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // Formatted Data based exactly on the PDF manual
+        const cheatSheetData = [
+            {
+                type: "practical",
+                category: "Basic System Commands",
+                icon: "fa-microchip",
+                items: [
+                    { cmd: "uname -a", func: "Displays detailed system & kernel info." },
+                    { cmd: "lsb_release -a", func: "Shows Linux distribution details." },
+                    { cmd: "whoami", func: "Displays the current logged-in user." },
+                    { cmd: "uptime", func: "Shows how long the system has been running." },
+                    { cmd: "top", func: "Real-time view of running processes and resource usage." },
+                    { cmd: "df -h", func: "Check disk space usage in human-readable format." },
+                    { cmd: "du -sh ~", func: "Check the total size of the home directory." },
+                    { cmd: "free -h", func: "Display available and used RAM." },
+                    { cmd: "who / w / last", func: "Shows who is logged in and past login history." },
+                    { cmd: "man nmap", func: "Opens the manual/documentation for a specific command." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "Package Management (APT)",
+                icon: "fa-box-open",
+                items: [
+                    { cmd: "sudo apt update", func: "Updates the local list of available packages." },
+                    { cmd: "sudo apt upgrade", func: "Installs available upgrades for all packages." },
+                    { cmd: "sudo apt install <pkg>", func: "Example: sudo apt install net-tools. Installs a new tool." },
+                    { cmd: "apt search <name>", func: "Searches the repositories for a specific package." },
+                    { cmd: "sudo apt remove <pkg>", func: "Removes a package but keeps its configuration files." },
+                    { cmd: "sudo apt purge <pkg>", func: "Completely removes a package AND its config files." },
+                    { cmd: "sudo apt autoremove", func: "Removes unneeded dependencies left behind." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "Directory Traversal",
+                icon: "fa-folder-tree",
+                items: [
+                    { cmd: "pwd", func: "Print Working Directory (shows your current path)." },
+                    { cmd: "cd ~", func: "Change directly to the current user's home directory." },
+                    { cmd: "cd -", func: "Jump back to the previous working directory." },
+                    { cmd: "ls -la", func: "List ALL files (including hidden) with detailed permissions." },
+                    { cmd: "ls -lh", func: "Long listing with human-readable file sizes." },
+                    { cmd: "tree ~", func: "Displays folder structure as a visual branching tree." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "File Operations",
+                icon: "fa-file-code",
+                items: [
+                    { cmd: "touch a.txt", func: "Creates a new empty file named a.txt." },
+                    { cmd: "cp -v file1 dir/", func: "Copies a file with 'verbosity' (shows progress)." },
+                    { cmd: "mv a.txt b.txt", func: "Moves or renames a file." },
+                    { cmd: "rm -rf folder/", func: "Brutally removes a folder and all contents recursively (Caution)." },
+                    { cmd: "mkdir -p a/b/c", func: "Creates a directory path, making parent folders if needed." },
+                    { cmd: "stat a.txt", func: "Shows detailed metadata (timestamps, blocks) of a file." },
+                    { cmd: "file a.txt", func: "Determines the actual file type regardless of extension." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "Viewing & Filtering Files",
+                icon: "fa-filter",
+                items: [
+                    { cmd: "cat a.txt | less", func: "Reads a file but lets you scroll through it safely." },
+                    { cmd: "head -n 20 file", func: "Reads only the first 20 lines of a file." },
+                    { cmd: "tail -f /var/log/auth.log", func: "Live-monitors a log file as new entries are added." },
+                    { cmd: "grep -i 'error' file", func: "Searches for 'error' in a file, ignoring case." },
+                    { cmd: "grep -v 'daemon' file", func: "Invert match: shows lines that DO NOT contain 'daemon'." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "File Searching",
+                icon: "fa-magnifying-glass",
+                items: [
+                    { cmd: "find /etc -name 'passwd'", func: "Searches inside /etc specifically for a file named passwd." },
+                    { cmd: "find / -type f -name '*.pdf'", func: "Finds all PDF files system-wide." },
+                    { cmd: "locate nginx.conf", func: "Instantly locates files using a pre-built database." },
+                    { cmd: "which nmap", func: "Shows the exact executable path of an installed command." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "File Permissions",
+                icon: "fa-key",
+                items: [
+                    { cmd: "ls -ld folder", func: "Displays the permissions specifically for a directory, not its contents." },
+                    { cmd: "chmod u+x script.sh", func: "Adds eXecute privileges to the User (owner) of the script." },
+                    { cmd: "chmod g-w file.txt", func: "Removes Write permissions from the Group." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "Networking",
+                icon: "fa-network-wired",
+                items: [
+                    { cmd: "ip a", func: "Modern command to show all IP addresses and interfaces." },
+                    { cmd: "sudo ip link set eth0 up", func: "Activates the eth0 network interface." },
+                    { cmd: "ping -c 4 google.com", func: "Sends exactly 4 ICMP echo requests to test connectivity." },
+                    { cmd: "ss -tuln", func: "Shows active listening ports (TCP/UDP) and connections." },
+                    { cmd: "dig google.com", func: "Performs DNS lookup to find IP records for a domain." },
+                    { cmd: "wget -O file.zip <url>", func: "Downloads a file from the web and saves it as file.zip." },
+                    { cmd: "curl -I http://site.com", func: "Fetches ONLY the HTTP headers from a website." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "User Management",
+                icon: "fa-users-gear",
+                items: [
+                    { cmd: "sudo adduser user1", func: "Interactive script to create a new user safely." },
+                    { cmd: "sudo passwd user1", func: "Changes or sets the password for user1." },
+                    { cmd: "sudo usermod -L user1", func: "Locks a user account." },
+                    { cmd: "sudo usermod -aG sudo user1", func: "Adds user1 to the sudo group (admin rights)." },
+                    { cmd: "sudo deluser --remove-home user1", func: "Deletes a user and wipes their home directory." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "Nmap: Port Scanning",
+                icon: "fa-radar",
+                items: [
+                    { cmd: "sudo nmap -sT <ip>", func: "TCP Connect Scan: Completes 3-way handshake (noisy)." },
+                    { cmd: "sudo nmap -sS <ip>", func: "SYN Stealth Scan: Half-open scan, doesn't complete handshake." },
+                    { cmd: "sudo nmap -sN <ip>", func: "NULL Scan: Sends packets with NO flags set." },
+                    { cmd: "sudo nmap -sA <ip>", func: "ACK Scan: Used to map firewall rules rather than find open ports." },
+                    { cmd: "sudo nmap -sX <ip>", func: "Xmas Scan: Sets FIN, PSH, and URG flags (lights up like a tree)." },
+                    { cmd: "sudo nmap -sP <ip>", func: "Ping Sweep: Only discovers if hosts are online, skips port scanning." }
+                ]
+            },
+            {
+                type: "practical",
+                category: "Vulnerability & Exploitation",
+                icon: "fa-bug",
+                items: [
+                    { cmd: "nmap --script vuln <ip>", func: "Uses Nmap Scripting Engine to check for known vulnerabilities." },
+                    { cmd: "nikto -h <url>", func: "Runs an aggressive vulnerability scan against a Web Server." },
+                    { cmd: "sqlmap -u <url>", func: "Automates the detection and exploitation of SQL Injection flaws." },
+                    { cmd: "searchsploit apache 2.4", func: "Searches the offline Exploit-DB for known Apache 2.4 exploits." },
+                    { cmd: "msfconsole", func: "Launches the Metasploit Framework for exploitation and validation." }
+                ]
+            },
+            {
+                type: "theory",
+                category: "Ethical Hacking",
+                icon: "fa-user-secret",
+                items: [
+                    { cmd: "Ethical Hacking", func: "Legally attempting to penetrate a system to document vulnerabilities before malicious attackers do." },
+                    { cmd: "Rules of Engagement", func: "1. Legality/Authorization 2. Define Scope 3. Do No Harm 4. Confidentiality of Reporting." },
+                    { cmd: "Phases of Hacking", func: "1. Reconnaissance (Info Gathering) 2. Scanning 3. Gaining Access 4. Maintaining Access 5. Covering Tracks." }
+                ]
+            },
+            {
+                type: "theory",
+                category: "CIA Triad",
+                icon: "fa-shield-halved",
+                items: [
+                    { cmd: "Confidentiality", func: "Uses Bell-LaPadula (BLP) Model (Read down, Write up). Relies on Symmetric (AES) & Asymmetric Encryption." },
+                    { cmd: "Integrity", func: "Uses Biba Model (Read up, Write down). Relies on Hashing (H(M)=h) to generate fixed-size digests for verification." },
+                    { cmd: "Availability", func: "Ensures operational state. Metric: A = MTTF / (MTTF + MTTR). Focuses on fault tolerance and reliability." }
+                ]
+            },
+            {
+                type: "theory",
+                category: "Social Engineering",
+                icon: "fa-users-viewfinder",
+                items: [
+                    { cmd: "Social Engineering", func: "Exploiting human interaction (urgency, familiarity) to bypass technical security controls." },
+                    { cmd: "Attack Vectors", func: "Phishing/Vishing/Smishing, Baiting (tempting items), Tailgating (following in), Pretexting, Scareware." },
+                    { cmd: "Defensive Measures", func: "Security awareness training, Multi-Factor Authentication (MFA), biometric auth, strict access controls." }
+                ]
+            },
+            {
+                type: "theory",
+                category: "Mobile Security",
+                icon: "fa-mobile-screen",
+                items: [
+                    { cmd: "Mobile Malware & Spyware", func: "Malicious software targeting devices. Prevented by OS updates, trusted sources, and app permission management." },
+                    { cmd: "Rooting / Jailbreaking", func: "Removing manufacturer OS restrictions (Android/iOS). Increases device vulnerability and voids warranties." },
+                    { cmd: "MDM (Mobile Device Mgmt)", func: "Admin software to enforce security policies, manage apps, encrypt data, and enable remote wipes." }
+                ]
+            },
+            {
+                type: "theory",
+                category: "Web App Threats",
+                icon: "fa-globe",
+                items: [
+                    { cmd: "SQL Injection (SQLi)", func: "Inserting malicious code into DB queries. Countermeasures: Parameterized queries, input validation, WAF." },
+                    { cmd: "Cross-Site Scripting (XSS)", func: "Injecting malicious scripts into web pages to steal cookies/sessions. Countermeasures: CSP, HTTPOnly, Sanitization." },
+                    { cmd: "Cross-Site Req. Forgery (CSRF)", func: "Tricks user into executing unauthorized actions. Countermeasures: Unique CSRF tokens, Same-site cookies." },
+                    { cmd: "Broken Authentication", func: "Compromising accounts. Countermeasures: Strong password policies, MFA, secure logout, safe libraries." }
+                ]
+            },
+            {
+                type: "theory",
+                category: "Types of Hackers",
+                icon: "fa-user-ninja",
+                items: [
+                    { cmd: "White Hat", func: "Authorized professionals who find and fix vulnerabilities legally (Ethical Hackers)." },
+                    { cmd: "Black Hat", func: "Malicious hackers who break into systems for personal gain or destruction (Crackers)." },
+                    { cmd: "Grey Hat", func: "Hackers who operate without authorization but often disclose flaws to the owners rather than exploiting them." },
+                    { cmd: "Script Kiddies", func: "Unskilled individuals who use pre-written tools/scripts without fully understanding how they work." },
+                    { cmd: "State-Sponsored", func: "Highly skilled attackers funded by governments for espionage or cyber warfare." }
+                ]
+            },
+            {
+                type: "theory",
+                category: "Penetration Testing Types",
+                icon: "fa-vial",
+                items: [
+                    { cmd: "Black Box Testing", func: "Tester has ZERO prior knowledge of the target. Simulates a blind external attack." },
+                    { cmd: "White Box Testing", func: "Tester has FULL knowledge (source code, architecture, credentials) for maximum coverage." },
+                    { cmd: "Gray Box Testing", func: "Tester has PARTIAL knowledge (e.g., standard user access) to test internal threats/privilege escalation." }
+                ]
+            },
+            {
+                type: "theory",
+                category: "Malware Classifications",
+                icon: "fa-spider",
+                items: [
+                    { cmd: "Ransomware", func: "Encrypts user data/systems and demands financial payment for the decryption key." },
+                    { cmd: "Trojan Horse", func: "Malware disguised as legitimate software that secretly opens a backdoor for attackers." },
+                    { cmd: "Worm", func: "Self-replicating malware that spreads autonomously across networks without human interaction." },
+                    { cmd: "Rootkit", func: "Deeply hidden software designed to conceal malicious processes and maintain privileged root access." }
+                ]
+            },
+            {
+                type: "theory",
+                category: "Network Theory Concepts",
+                icon: "fa-diagram-project",
+                items: [
+                    { cmd: "TCP 3-Way Handshake", func: "The core process of establishing a TCP connection: 1. SYN, 2. SYN-ACK, 3. ACK." },
+                    { cmd: "OSI Model Layers", func: "7 conceptual layers: Physical(1), Data Link(2), Network(3), Transport(4), Session(5), Presentation(6), Application(7)." },
+                    { cmd: "MAC vs IP Address", func: "MAC is the permanent physical address (Layer 2). IP is the logical routing address (Layer 3)." }
+                ]
+            }
+        ];
+
+        const practicalGrid = document.getElementById('practicalGrid');
+        const theoryGrid = document.getElementById('theoryGrid');
+        const practicalSection = document.getElementById('practicalSection');
+        const theorySection = document.getElementById('theorySection');
+        const searchInput = document.getElementById('searchInput');
+        const noResults = document.getElementById('noResults');
+
+        // Render Function
+        function renderCards(filterText = '') {
+            practicalGrid.innerHTML = '';
+            theoryGrid.innerHTML = '';
+            
+            let hasPractical = false;
+            let hasTheory = false;
+            const lowerFilter = filterText.toLowerCase();
+
+            cheatSheetData.forEach(section => {
+                // Filter items within the section
+                const filteredItems = section.items.filter(item => 
+                    item.cmd.toLowerCase().includes(lowerFilter) || 
+                    item.func.toLowerCase().includes(lowerFilter) ||
+                    section.category.toLowerCase().includes(lowerFilter)
+                );
+
+                if (filteredItems.length > 0) {
+                    // Create Card
+                    const card = document.createElement('div');
+                    card.className = 'glass-card rounded-xl overflow-hidden break-inside-avoid shadow-lg mb-6';
+                    
+                    const isTheory = section.type === "theory";
+                    const themeColor = isTheory ? "text-blue-400" : "text-cyber-green";
+                    
+                    // Card Header
+                    const header = document.createElement('div');
+                    header.className = 'bg-cyber-dark px-5 py-4 border-b border-cyber-border flex items-center gap-3';
+                    header.innerHTML = `
+                        <i class="fas ${section.icon} ${themeColor} text-lg"></i>
+                        <h2 class="text-lg font-bold text-white tracking-wide">${section.category}</h2>
+                    `;
+                    card.appendChild(header);
+
+                    // Card Body
+                    const body = document.createElement('div');
+                    body.className = 'p-5 space-y-5';
+
+                    filteredItems.forEach(item => {
+                        const cmdBlock = document.createElement('div');
+                        cmdBlock.className = 'cmd-block group/item';
+                        
+                        // Highlight search terms if filtering
+                        let highlightedCmd = item.cmd;
+                        let highlightedFunc = item.func;
+                        
+                        if (filterText) {
+                            const regex = new RegExp(`(${filterText})`, 'gi');
+                            const highlightSpan = `<span class="${isTheory ? 'bg-blue-500/30 text-blue-400' : 'bg-cyber-green/30 text-cyber-green'}">$1</span>`;
+                            highlightedCmd = item.cmd.replace(regex, highlightSpan);
+                            highlightedFunc = item.func.replace(regex, highlightSpan);
+                        }
+
+                        const prefix = isTheory ? '<i class="fas fa-hashtag text-gray-500 mr-2 text-xs"></i>' : '<span class="text-gray-500 select-none mr-2">$</span>';
+
+                        cmdBlock.innerHTML = `
+                            <div class="flex justify-between items-start mb-1">
+                                <div class="bg-black/50 border border-gray-800 rounded p-2 px-3 flex-grow font-mono text-sm ${themeColor} overflow-x-auto whitespace-nowrap flex items-center">
+                                    ${prefix}${highlightedCmd}
+                                </div>
+                                <button onclick="copyToClipboard('${item.cmd.replace(/'/g, "\\'")}')" class="copy-btn ml-2 p-2 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white rounded border border-gray-700 flex-shrink-0" title="Copy Content">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-400 pl-1 leading-relaxed">${highlightedFunc}</p>
+                        `;
+                        body.appendChild(cmdBlock);
+                    });
+
+                    card.appendChild(body);
+                    
+                    if (isTheory) {
+                        theoryGrid.appendChild(card);
+                        hasTheory = true;
+                    } else {
+                        practicalGrid.appendChild(card);
+                        hasPractical = true;
+                    }
+                }
+            });
+
+            // Toggle visibility of sections based on search results
+            practicalSection.classList.toggle('hidden', !hasPractical);
+            theorySection.classList.toggle('hidden', !hasTheory);
+            
+            if (hasPractical || hasTheory) {
+                noResults.classList.add('hidden');
+            } else {
+                noResults.classList.remove('hidden');
+            }
+        }
+
+        // Copy to Clipboard logic
+        function copyToClipboard(text) {
+            // Using modern clipboard API if available, fallback for older browsers
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text);
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {
+                    console.error('Unable to copy', err);
+                }
+                document.body.removeChild(textArea);
+            }
+            
+            showToast();
+        }
+
+        // Toast logic
+        let toastTimeout;
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2000);
+        }
+
+        // Search Event Listener
+        searchInput.addEventListener('input', (e) => {
+            renderCards(e.target.value);
+        });
+
+        // Initial Render
+        renderCards();
+
+    </script>
+</body>
+</html>
